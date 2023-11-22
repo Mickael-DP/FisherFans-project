@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\FishingTripRepository;
+use App\Service\Filter\CustomRangeFilter;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,13 +26,9 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete(),
     ]
 )]
-#[ApiFilter(SearchFilter::class, strategy: 'partial', properties: ['title'])]
-#[ApiFilter(RangeFilter::class, properties: [
-    'startingDate',
-    'endingDate',
-    'startingTime',
-    'endingTime',
-    'price'
+#[ApiFilter(SearchFilter::class, properties: ['title' => 'partial'])]
+#[ApiFilter(CustomRangeFilter::class, properties: [
+    'price',
 ])]
 class FishingTrip
 {
