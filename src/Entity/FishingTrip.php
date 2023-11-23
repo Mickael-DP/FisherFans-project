@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
@@ -12,6 +13,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\FishingTripRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -46,11 +49,11 @@ class FishingTrip
     private ?string $rate = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[ApiFilter(RangeFilter::class)]
+    #[ApiFilter(DateFilter::class)]
     private ?\DateTimeInterface $startingDate = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[ApiFilter(RangeFilter::class)]
+    #[ApiFilter(DateFilter::class)]
     private ?\DateTimeInterface $endingDate = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
@@ -62,11 +65,20 @@ class FishingTrip
     private ?\DateTimeInterface $endingTime = null;
 
     #[ORM\Column]
+    #[ApiFilter(RangeFilter::class)]
     private ?int $passengerNumber = null;
 
     #[ORM\Column]
     #[ApiFilter(RangeFilter::class)]
     private ?float $price = null;
+
+    #[ORM\OneToMany(mappedBy: 'fishingTrip', targetEntity: Reservation::class)]
+    private Collection $reservations;
+
+    public function __construct()
+    {
+        $this->reservations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -189,6 +201,36 @@ class FishingTrip
     public function setPrice(float $price): static
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setFishingTrip($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getFishingTrip() === $this) {
+                $reservation->setFishingTrip(null);
+            }
+        }
 
         return $this;
     }
