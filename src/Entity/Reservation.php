@@ -27,8 +27,6 @@ use ApiPlatform\Metadata\Delete;
         new Delete(),
     ]
 )]
-#[ApiFilter(DateFilter::class, properties: ['date'])]
-#[ApiFilter(RangeFilter::class, properties: ['seatNumber', 'totalPrice'])]
 class Reservation
 {
     #[ORM\Id]
@@ -37,13 +35,19 @@ class Reservation
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ApiFilter(DateFilter::class)]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
+    #[ApiFilter(RangeFilter::class)]
     private ?int $seatNumber = null;
 
     #[ORM\Column]
+    #[ApiFilter(RangeFilter::class)]
     private ?float $totalPrice = null;
+
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    private ?FishingTrip $fishingTrip = null;
 
     public function getId(): ?int
     {
@@ -82,6 +86,18 @@ class Reservation
     public function setTotalPrice(float $totalPrice): static
     {
         $this->totalPrice = $totalPrice;
+
+        return $this;
+    }
+
+    public function getFishingTrip(): ?FishingTrip
+    {
+        return $this->fishingTrip;
+    }
+
+    public function setFishingTrip(?FishingTrip $fishingTrip): static
+    {
+        $this->fishingTrip = $fishingTrip;
 
         return $this;
     }
