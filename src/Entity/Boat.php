@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\BoatRepository;
 use Doctrine\DBAL\Types\Types;
@@ -31,6 +33,7 @@ class Boat
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
@@ -40,22 +43,38 @@ class Boat
     private ?string $brand = null;
 
     #[ORM\Column]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?int $manufacturingYear = null;
 
     #[ORM\Column(length: 255)]
     private ?string $photoURL = null;
 
     #[ORM\Column(length: 255)]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $requiredLicenseType = null;
 
     #[ORM\Column(length: 255)]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $boatType = null;
 
     #[ORM\Column(type: Types::ARRAY)]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private array $equipment = [];
 
     #[ORM\Column]
     private ?float $depositAmount = null;
+
+    #[ORM\Column]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
+    private ?int $maxCapacity = null;
+
+    #[ORM\Column(length: 255)]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
+    private ?string $propulsionType = null;
+
+    #[ORM\Column(length: 255)]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
+    private ?string $size = null;
 
     public function getId(): ?int
     {
@@ -166,6 +185,42 @@ class Boat
     public function setDepositAmount(float $depositAmount): static
     {
         $this->depositAmount = $depositAmount;
+
+        return $this;
+    }
+
+    public function getMaxCapacity(): ?int
+    {
+        return $this->maxCapacity;
+    }
+
+    public function setMaxCapacity(int $maxCapacity): static
+    {
+        $this->maxCapacity = $maxCapacity;
+
+        return $this;
+    }
+
+    public function getPropulsionType(): ?string
+    {
+        return $this->propulsionType;
+    }
+
+    public function setPropulsionType(string $propulsionType): static
+    {
+        $this->propulsionType = $propulsionType;
+
+        return $this;
+    }
+
+    public function getSize(): ?string
+    {
+        return $this->size;
+    }
+
+    public function setSize(string $size): static
+    {
+        $this->size = $size;
 
         return $this;
     }
