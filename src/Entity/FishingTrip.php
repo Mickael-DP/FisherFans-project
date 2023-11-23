@@ -12,7 +12,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\FishingTripRepository;
-use App\Service\Filter\CustomRangeFilter;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -26,10 +25,6 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete(),
     ]
 )]
-#[ApiFilter(SearchFilter::class, properties: ['title' => 'partial'])]
-#[ApiFilter(CustomRangeFilter::class, properties: [
-    'price',
-])]
 class FishingTrip
 {
     #[ORM\Id]
@@ -38,6 +33,7 @@ class FishingTrip
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -50,21 +46,26 @@ class FishingTrip
     private ?string $rate = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ApiFilter(RangeFilter::class)]
     private ?\DateTimeInterface $startingDate = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ApiFilter(RangeFilter::class)]
     private ?\DateTimeInterface $endingDate = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[ApiFilter(RangeFilter::class)]
     private ?\DateTimeInterface $startingTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[ApiFilter(RangeFilter::class)]
     private ?\DateTimeInterface $endingTime = null;
 
     #[ORM\Column]
     private ?int $passengerNumber = null;
 
     #[ORM\Column]
+    #[ApiFilter(RangeFilter::class)]
     private ?float $price = null;
 
     public function getId(): ?int
