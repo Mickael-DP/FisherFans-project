@@ -22,7 +22,50 @@ use ApiPlatform\Metadata\Delete;
         new Get(),
         new Put(),
         new Delete(),
-        new Get(uriTemplate: '/boats/in-area'),
+        new Get(uriTemplate: '/boats/in-area', openapiContext: [
+            'summary' => 'Retrieve a list of boats within a specified geographic area',
+            'parameters' => [
+                [
+                    'name' => 'latitude',
+                    'in' => 'query',
+                    'required' => true,
+                    'schema' => [
+                        'type' => 'number',
+                        'format' => 'float',
+                    ],
+                ],
+                [
+                    'name' => 'longitude',
+                    'in' => 'query',
+                    'required' => true,
+                    'schema' => [
+                        'type' => 'number',
+                        'format' => 'float',
+                    ],
+                ],
+                [
+                    'name' => 'radius',
+                    'in' => 'query',
+                    'required' => true,
+                    'schema' => [
+                        'type' => 'number',
+                        'format' => 'float',
+                    ],
+                ],
+            ],
+            'responses' => [
+                '200' => [
+                    'description' => 'Boats in area',
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'array',    
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]),
     ]
 )]
 class Boat
