@@ -2,13 +2,29 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\FishingLogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FishingLogRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Post(),
+        new Get(),
+        new Put(),
+        new Delete(),
+    ]
+)]
 class FishingLog
 {
     #[ORM\Id]
@@ -17,6 +33,7 @@ class FishingLog
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $fish_name = null;
 
     #[ORM\Column(length: 255)]
@@ -35,6 +52,7 @@ class FishingLog
     private ?string $fishing_location = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ApiFilter(RangeFilter::class)]
     private ?\DateTimeInterface $fishing_date = null;
 
     #[ORM\Column(length: 255)]
