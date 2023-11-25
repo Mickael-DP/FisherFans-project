@@ -6,10 +6,17 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
-class User
+#[ApiResource(operations: [
+    new Get(),
+    new Post(),
+    new Delete(),
+    new Put()
+    ]
+)]
+abstract class User implements UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,6 +28,9 @@ class User
 
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
+
+    #[ORM\Column(type: 'string')]
+    private ?string $password = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $birthDate = null;
@@ -93,6 +103,17 @@ class User
     {
         $this->firstname = $firstname;
 
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
         return $this;
     }
 
@@ -274,5 +295,29 @@ class User
         $this->commerceRegisterNumber = $commerceRegisterNumber;
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        // Retournez ici les rôles de l'utilisateur
+        // Par exemple, return ['ROLE_USER'];
+        return ['ROLE_USER'];
+    }
+
+    public function getSalt(): ?string
+    {
+        // Pas nécessaire si vous utilisez un algorithme de hachage moderne
+        return null;
+    }
+
+    public function getUsername(): string
+    {
+        // Utilisez généralement l'email comme identifiant
+        return $this->email;
+    }
+
+    public function eraseCredentials()
+    {
+        // Utilisé pour effacer les données sensibles
     }
 }
