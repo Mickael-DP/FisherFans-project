@@ -3,83 +3,202 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
+use App\State\UserPasswordHasher;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(operations: [
+    new GetCollection(
+        security: "is_granted('ROLE_ADMIN')"
+    ),
+    new Post(validationContext: ['groups' => ['Default', 'user:create']], processor: UserPasswordHasher::class),
     new Get(),
-    new Post(),
+    new Put(processor: UserPasswordHasher::class),
     new Delete(),
-    new Put()
-    ]
+],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:create', 'user:update']],
+    security: "is_granted('ROLE_ADMIN') or object == user"
 )]
-abstract class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    #[Groups(['user:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
+    #[ORM\Column(length: 180, unique: true)]
+    private ?string $email = null;
+
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[ORM\Column(type: 'string')]
-    private ?string $password = null;
-
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $birthDate = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
-
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 50)]
     private ?string $phone = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255)]
     private ?string $address = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 20)]
     private ?string $postalCode = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255)]
     private ?string $city = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(type: Types::ARRAY, nullable: true)]
     private ?array $languagesSpoken = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatarUrl = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $boatingLicenseNumber = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $insuranceNumber = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $companyName = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $activityType = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $siretNumber = null;
 
+    #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 255)]
     private ?string $commerceRegisterNumber = null;
+
+
+    #[ORM\Column]
+    private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    private ?string $password = null;
+
+    #[Groups(['user:create', 'user:update'])]
+    private ?string $plainPassword = null;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string)$this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+         $this->plainPassword = null;
     }
 
     public function getLastname(): ?string
@@ -106,17 +225,6 @@ abstract class User implements UserInterface
         return $this;
     }
 
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-        return $this;
-    }
-
     public function getBirthDate(): ?\DateTimeInterface
     {
         return $this->birthDate;
@@ -125,18 +233,6 @@ abstract class User implements UserInterface
     public function setBirthDate(\DateTimeInterface $birthDate): static
     {
         $this->birthDate = $birthDate;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
 
         return $this;
     }
@@ -297,13 +393,6 @@ abstract class User implements UserInterface
         return $this;
     }
 
-    public function getRoles(): array
-    {
-        // Retournez ici les rôles de l'utilisateur
-        // Par exemple, return ['ROLE_USER'];
-        return ['ROLE_USER'];
-    }
-
     public function getSalt(): ?string
     {
         // Pas nécessaire si vous utilisez un algorithme de hachage moderne
@@ -314,10 +403,5 @@ abstract class User implements UserInterface
     {
         // Utilisez généralement l'email comme identifiant
         return $this->email;
-    }
-
-    public function eraseCredentials()
-    {
-        // Utilisé pour effacer les données sensibles
     }
 }

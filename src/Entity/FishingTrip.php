@@ -26,7 +26,8 @@ use Doctrine\ORM\Mapping as ORM;
         new Get(),
         new Put(),
         new Delete(),
-    ]
+    ],
+    security: "is_granted('ROLE_USER')"
 )]
 class FishingTrip
 {
