@@ -50,6 +50,10 @@ class Reservation
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     private ?FishingTrip $fishingTrip = null;
 
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -99,6 +103,18 @@ class Reservation
     public function setFishingTrip(?FishingTrip $fishingTrip): static
     {
         $this->fishingTrip = $fishingTrip;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

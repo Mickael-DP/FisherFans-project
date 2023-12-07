@@ -119,6 +119,10 @@ class Boat
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?string $size = null;
 
+    #[ORM\ManyToOne(inversedBy: 'boats')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -264,6 +268,18 @@ class Boat
     public function setSize(string $size): static
     {
         $this->size = $size;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

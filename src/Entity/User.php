@@ -10,6 +10,8 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
 use App\State\UserPasswordHasher;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -118,6 +120,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Groups(['user:create', 'user:update'])]
     private ?string $plainPassword = null;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Reservation::class)]
+    private Collection $reservations;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: FishingTrip::class)]
+    private Collection $fishingTrips;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Boat::class)]
+    private Collection $boats;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: FishingLog::class)]
+    private Collection $fishingLogs;
+
+    public function __construct()
+    {
+        $this->reservations = new ArrayCollection();
+        $this->fishingTrips = new ArrayCollection();
+        $this->boats = new ArrayCollection();
+        $this->fishingLogs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -403,5 +425,125 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // Utilisez généralement l'email comme identifiant
         return $this->email;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getOwner() === $this) {
+                $reservation->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FishingTrip>
+     */
+    public function getFishingTrips(): Collection
+    {
+        return $this->fishingTrips;
+    }
+
+    public function addFishingTrip(FishingTrip $fishingTrip): static
+    {
+        if (!$this->fishingTrips->contains($fishingTrip)) {
+            $this->fishingTrips->add($fishingTrip);
+            $fishingTrip->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFishingTrip(FishingTrip $fishingTrip): static
+    {
+        if ($this->fishingTrips->removeElement($fishingTrip)) {
+            // set the owning side to null (unless already changed)
+            if ($fishingTrip->getOwner() === $this) {
+                $fishingTrip->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Boat>
+     */
+    public function getBoats(): Collection
+    {
+        return $this->boats;
+    }
+
+    public function addBoat(Boat $boat): static
+    {
+        if (!$this->boats->contains($boat)) {
+            $this->boats->add($boat);
+            $boat->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBoat(Boat $boat): static
+    {
+        if ($this->boats->removeElement($boat)) {
+            // set the owning side to null (unless already changed)
+            if ($boat->getOwner() === $this) {
+                $boat->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FishingLog>
+     */
+    public function getFishingLogs(): Collection
+    {
+        return $this->fishingLogs;
+    }
+
+    public function addFishingLog(FishingLog $fishingLog): static
+    {
+        if (!$this->fishingLogs->contains($fishingLog)) {
+            $this->fishingLogs->add($fishingLog);
+            $fishingLog->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFishingLog(FishingLog $fishingLog): static
+    {
+        if ($this->fishingLogs->removeElement($fishingLog)) {
+            // set the owning side to null (unless already changed)
+            if ($fishingLog->getOwner() === $this) {
+                $fishingLog->setOwner(null);
+            }
+        }
+
+        return $this;
     }
 }
