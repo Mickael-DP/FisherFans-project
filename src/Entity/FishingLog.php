@@ -58,8 +58,9 @@ class FishingLog
     #[ORM\Column(length: 255)]
     private ?string $fish_released = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $owner = null;
+    #[ORM\ManyToOne(inversedBy: 'fishingLogs')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
     public function getId(): ?int
     {
@@ -162,12 +163,12 @@ class FishingLog
         return $this;
     }
 
-    public function getOwner(): ?string
+    public function getOwner(): ?User
     {
         return $this->owner;
     }
 
-    public function setOwner(string $owner): static
+    public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
 
