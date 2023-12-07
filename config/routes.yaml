@@ -2,4 +2,9 @@ controllers:
     resource:
         path: ../src/Controller/
         namespace: App\Controller
+    stateless: false
     type: attribute
+
+auth:
+    path: /auth
+    methods: ['POST']

@@ -25,7 +25,8 @@ use ApiPlatform\Metadata\Delete;
         new Get(),
         new Put(),
         new Delete(),
-    ]
+    ],
+    security: "is_granted('ROLE_USER')"
 )]
 class Reservation
 {
