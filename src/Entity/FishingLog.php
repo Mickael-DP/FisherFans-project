@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\Put;
 use App\Repository\FishingLogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FishingLogRepository::class)]
 #[ApiResource(
@@ -23,41 +24,54 @@ use Doctrine\ORM\Mapping as ORM;
         new Get(),
         new Put(),
         new Delete(),
-    ]
+    ],
+    normalizationContext: ['groups' => ['log:read']],
+    denormalizationContext: ['groups' => ['log:create', 'log:update']],
+    security: "is_granted('ROLE_USER')",
 )]
 class FishingLog
 {
+    #[Groups(['log:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255)]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $fish_name = null;
 
+    #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255)]
     private ?string $photo_url = null;
 
+    #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $comment = null;
 
+    #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column]
     private ?float $size_cm = null;
 
+    #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column]
     private ?float $weight_kg = null;
 
+    #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255)]
     private ?string $fishing_location = null;
 
+    #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[ApiFilter(RangeFilter::class)]
     private ?\DateTimeInterface $fishing_date = null;
 
+    #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255)]
     private ?string $fish_released = null;
 
+    #[Groups(['log:read'])]
     #[ORM\ManyToOne(inversedBy: 'fishingLogs')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
