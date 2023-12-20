@@ -71,7 +71,7 @@ class FishingLog
     #[ORM\Column(length: 255)]
     private ?string $fish_released = null;
 
-    #[Groups(['log:read'])]
+    #[Groups(['log:read', 'log:create'])]
     #[ORM\ManyToOne(inversedBy: 'fishingLogs')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;

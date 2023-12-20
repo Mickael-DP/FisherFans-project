@@ -27,15 +27,18 @@ class BoatController extends AbstractController
 
             $entityManager = $this->doctrine->getManager();
 
-            $brand = $request->get('brand');
-            $description = $request->get('description');
-            $manufacturingYear = $request->get('manufacturingYear');
-            $name = $request->get('name');
-            $photoURL = $request->get('photoURL');
+            $data = json_decode($request->getContent(), true);
 
-            if (!$brand || !$description || !$manufacturingYear || !$name || !$photoURL) {
-                return new Response('Toutes les données requises ne sont pas fournies.', Response::HTTP_BAD_REQUEST);
-            }
+            $brand = $data["brand"];
+            $description = $data["description"];
+            $manufacturingYear = $data["manufacturingYear"];
+            $name = $data["name"];
+            $type = $data["boatType"];
+            $deposit = $data["depositAmount"];
+            $photoURL = $data["photoURL"];
+            $capacity = $data["maxCapacity"];
+            $propulsionType = $data["propulsionType"];
+            $size = $data["size"];
 
             try {
                 $boat = new Boat();
@@ -47,6 +50,12 @@ class BoatController extends AbstractController
                 $boat->setManufacturingYear($manufacturingYear);
                 $boat->setName($name);
                 $boat->setPhotoURL($photoURL);
+                $boat->setBoatType($type);
+                $boat->setDepositAmount($deposit);
+                $boat->setMaxCapacity($capacity);
+                $boat->setPropulsionType($propulsionType);
+                $boat->setSize($size);
+                $boat->setOwner($user);
 
                 $entityManager->persist($boat);
                 $entityManager->flush();

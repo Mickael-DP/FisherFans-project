@@ -58,7 +58,7 @@ class Reservation
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     private ?FishingTrip $fishingTrip = null;
 
-    #[Groups(['reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:create'])]
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
