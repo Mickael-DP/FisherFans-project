@@ -66,7 +66,8 @@ use ApiPlatform\Metadata\Delete;
                 ],
             ],
         ]),
-    ]
+    ],
+    security: "is_granted('ROLE_USER')"
 )]
 class Boat
 {
