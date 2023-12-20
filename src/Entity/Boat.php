@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use App\Controller\BoatController;
 use App\Repository\BoatRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,12 +14,13 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Delete;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BoatRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Post(),
+        new Post(controller: BoatController::class),
         new Get(),
         new Put(),
         new Delete(),
@@ -67,59 +69,75 @@ use ApiPlatform\Metadata\Delete;
             ],
         ]),
     ],
+    normalizationContext: ['groups' => ['boat:read']],
+    denormalizationContext: ['groups' => ['boat:create', 'boat:update']],
     security: "is_granted('ROLE_USER')"
 )]
 class Boat
 {
+    #[Groups(['boat:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column(length: 255)]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $name = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column(length: 255)]
     private ?string $brand = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?int $manufacturingYear = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column(length: 255)]
     private ?string $photoURL = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column(length: 255)]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $requiredLicenseType = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column(length: 255)]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $boatType = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column(type: Types::ARRAY)]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private array $equipment = [];
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column]
     private ?float $depositAmount = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?int $maxCapacity = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column(length: 255)]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?string $propulsionType = null;
 
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
     #[ORM\Column(length: 255)]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?string $size = null;
 
+    #[Groups(['boat:read'])]
     #[ORM\ManyToOne(inversedBy: 'boats')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;

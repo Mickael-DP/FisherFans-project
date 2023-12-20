@@ -12,70 +12,87 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\TripCreationController;
 use App\Repository\FishingTripRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FishingTripRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Post(),
+        new Post(controller: TripCreationController::class),
         new Get(),
         new Put(),
         new Delete(),
     ],
+    normalizationContext: ['groups' => ['trip:read']],
+    denormalizationContext: ['groups' => ['trip:create', 'trip:update']],
     security: "is_granted('ROLE_USER')"
 )]
 class FishingTrip
 {
+    #[Groups(['trip:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column(length: 255)]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $informations = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column(length: 255)]
     private ?string $rate = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[ApiFilter(DateFilter::class)]
     private ?\DateTimeInterface $startingDate = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[ApiFilter(DateFilter::class)]
     private ?\DateTimeInterface $endingDate = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[ApiFilter(RangeFilter::class)]
     private ?\DateTimeInterface $startingTime = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[ApiFilter(RangeFilter::class)]
     private ?\DateTimeInterface $endingTime = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column]
     #[ApiFilter(RangeFilter::class)]
     private ?int $passengerNumber = null;
 
+    #[Groups(['trip:read', 'trip:create', 'trip:update'])]
     #[ORM\Column]
     #[ApiFilter(RangeFilter::class)]
     private ?float $price = null;
 
+    #[Groups(['trip:read'])]
     #[ORM\OneToMany(mappedBy: 'fishingTrip', targetEntity: Reservation::class)]
     private Collection $reservations;
 
+    #[Groups(['trip:read'])]
     #[ORM\ManyToOne(inversedBy: 'fishingTrips')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;

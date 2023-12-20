@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Delete;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 // TODO: Add missing properties tripId, ownerId and there filters
 
@@ -26,30 +27,38 @@ use ApiPlatform\Metadata\Delete;
         new Put(),
         new Delete(),
     ],
-    security: "is_granted('ROLE_USER')"
+    normalizationContext: ['groups' => ['reservation:read']],
+    denormalizationContext: ['groups' => ['reservation:create', 'reservation:update']],
+    security: "is_granted('ROLE_USER')",
 )]
 class Reservation
 {
+    #[Groups(['reservation:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['reservation:read', 'reservation:create', 'reservation:update'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[ApiFilter(DateFilter::class)]
     private ?\DateTimeInterface $date = null;
 
+    #[Groups(['reservation:read', 'reservation:create', 'reservation:update'])]
     #[ORM\Column]
     #[ApiFilter(RangeFilter::class)]
     private ?int $seatNumber = null;
 
+    #[Groups(['reservation:read', 'reservation:create', 'reservation:update'])]
     #[ORM\Column]
     #[ApiFilter(RangeFilter::class)]
     private ?float $totalPrice = null;
 
+    #[Groups(['reservation:read'])]
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     private ?FishingTrip $fishingTrip = null;
 
+    #[Groups(['reservation:read'])]
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
