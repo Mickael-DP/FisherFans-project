@@ -92,7 +92,7 @@ class FishingTrip
     #[ORM\OneToMany(mappedBy: 'fishingTrip', targetEntity: Reservation::class)]
     private Collection $reservations;
 
-    #[Groups(['trip:read'])]
+    #[Groups(['trip:read', 'trip:create'])]
     #[ORM\ManyToOne(inversedBy: 'fishingTrips')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;

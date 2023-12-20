@@ -137,7 +137,7 @@ class Boat
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?string $size = null;
 
-    #[Groups(['boat:read'])]
+    #[Groups(['boat:read', 'boat:create'])]
     #[ORM\ManyToOne(inversedBy: 'boats')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
