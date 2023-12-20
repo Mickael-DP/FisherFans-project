@@ -44,7 +44,7 @@ class TripCreationController extends AbstractController
             $em->persist($trip);
             $em->flush();
 
-            return $this->json($data, 201);
+            return $this->json($trip, 201);
         } catch (Exception $e) {
             return $this->json("Bad Request", 400);
         }

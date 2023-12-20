@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Boat;
+use App\Entity\User;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,14 +13,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class BoatController extends AbstractController
 {
 
-    #[Route('/boats', name: 'create_boat', methods: ['POST'])]
-    public function createBoat(Request $request): Response
+
+    public function __construct(private ManagerRegistry $doctrine)
     {
+    }
+
+    public function __invoke(Request $request): Response
+    {
+        /** @var User $user */
         $user = $this->getUser();
 
         if ($user && $user->getBoatingLicenseNumber() !== null) {
 
-            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager = $this->doctrine->getManager();
 
             $brand = $request->get('brand');
             $description = $request->get('description');
@@ -44,7 +51,7 @@ class BoatController extends AbstractController
                 $entityManager->persist($boat);
                 $entityManager->flush();
 
-                return new Response('Bateau créé avec succès', Response::HTTP_CREATED);
+                return $this->json($boat, 201);
             } catch (\Exception $e) {
                 return new Response('Erreur lors de la création du bateau : ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
