@@ -40,11 +40,11 @@ class FishingLog
     #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255)]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
-    private ?string $fish_name = null;
+    private ?string $fishName = null;
 
     #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255)]
-    private ?string $photo_url = null;
+    private ?string $photoUrl = null;
 
     #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -52,24 +52,24 @@ class FishingLog
 
     #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column]
-    private ?float $size_cm = null;
+    private ?float $sizeCm = null;
 
     #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column]
-    private ?float $weight_kg = null;
+    private ?float $weightKg = null;
 
     #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255)]
-    private ?string $fishing_location = null;
+    private ?string $fishingLocation = null;
 
     #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[ApiFilter(RangeFilter::class)]
-    private ?\DateTimeInterface $fishing_date = null;
+    private ?\DateTimeInterface $fishingDate = null;
 
     #[Groups(['log:read', 'log:create', 'log:update'])]
     #[ORM\Column(length: 255)]
-    private ?string $fish_released = null;
+    private ?string $fishReleased = null;
 
     #[Groups(['log:read', 'log:create'])]
     #[ORM\ManyToOne(inversedBy: 'fishingLogs')]
@@ -83,24 +83,24 @@ class FishingLog
 
     public function getFishName(): ?string
     {
-        return $this->fish_name;
+        return $this->fishName;
     }
 
-    public function setFishName(string $fish_name): static
+    public function setFishName(string $fishName): static
     {
-        $this->fish_name = $fish_name;
+        $this->fishName = $fishName;
 
         return $this;
     }
 
     public function getPhotoUrl(): ?string
     {
-        return $this->photo_url;
+        return $this->photoUrl;
     }
 
-    public function setPhotoUrl(string $photo_url): static
+    public function setPhotoUrl(string $photoUrl): static
     {
-        $this->photo_url = $photo_url;
+        $this->photoUrl = $photoUrl;
 
         return $this;
     }
@@ -119,60 +119,60 @@ class FishingLog
 
     public function getSizeCm(): ?float
     {
-        return $this->size_cm;
+        return $this->sizeCm;
     }
 
-    public function setSizeCm(float $size_cm): static
+    public function setSizeCm(float $sizeCm): static
     {
-        $this->size_cm = $size_cm;
+        $this->sizeCm = $sizeCm;
 
         return $this;
     }
 
     public function getWeightKg(): ?float
     {
-        return $this->weight_kg;
+        return $this->weightKg;
     }
 
-    public function setWeightKg(float $weight_kg): static
+    public function setWeightKg(float $weightKg): static
     {
-        $this->weight_kg = $weight_kg;
+        $this->weightKg = $weightKg;
 
         return $this;
     }
 
     public function getFishingLocation(): ?string
     {
-        return $this->fishing_location;
+        return $this->fishingLocation;
     }
 
-    public function setFishingLocation(string $fishing_location): static
+    public function setFishingLocation(string $fishingLocation): static
     {
-        $this->fishing_location = $fishing_location;
+        $this->fishingLocation = $fishingLocation;
 
         return $this;
     }
 
     public function getFishingDate(): ?\DateTimeInterface
     {
-        return $this->fishing_date;
+        return $this->fishingDate;
     }
 
-    public function setFishingDate(\DateTimeInterface $fishing_date): static
+    public function setFishingDate(\DateTimeInterface $fishingDate): static
     {
-        $this->fishing_date = $fishing_date;
+        $this->fishingDate = $fishingDate;
 
         return $this;
     }
 
     public function getFishReleased(): ?string
     {
-        return $this->fish_released;
+        return $this->fishReleased;
     }
 
-    public function setFishReleased(string $fish_released): static
+    public function setFishReleased(string $fishReleased): static
     {
-        $this->fish_released = $fish_released;
+        $this->fishReleased = $fishReleased;
 
         return $this;
     }
