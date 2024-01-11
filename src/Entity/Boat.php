@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Odm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -24,50 +25,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new Put(),
         new Delete(),
-        new Get(uriTemplate: '/boats/in-area', openapiContext: [
-            'summary' => 'Retrieve a list of boats within a specified geographic area',
-            'parameters' => [
-                [
-                    'name' => 'latitude',
-                    'in' => 'query',
-                    'required' => true,
-                    'schema' => [
-                        'type' => 'number',
-                        'format' => 'float',
-                    ],
-                ],
-                [
-                    'name' => 'longitude',
-                    'in' => 'query',
-                    'required' => true,
-                    'schema' => [
-                        'type' => 'number',
-                        'format' => 'float',
-                    ],
-                ],
-                [
-                    'name' => 'radius',
-                    'in' => 'query',
-                    'required' => true,
-                    'schema' => [
-                        'type' => 'number',
-                        'format' => 'float',
-                    ],
-                ],
-            ],
-            'responses' => [
-                '200' => [
-                    'description' => 'Boats in area',
-                    'content' => [
-                        'application/json' => [
-                            'schema' => [
-                                'type' => 'array',    
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ]),
     ],
     normalizationContext: ['groups' => ['boat:read']],
     denormalizationContext: ['groups' => ['boat:create', 'boat:update']],
@@ -141,6 +98,16 @@ class Boat
     #[ORM\ManyToOne(inversedBy: 'boats')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
+
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
+    #[ORM\Column]
+    #[ApiFilter(RangeFilter::class)]
+    private ?float $latitude = null;
+
+    #[Groups(['boat:read', 'boat:create', 'boat:update'])]
+    #[ORM\Column]
+    #[ApiFilter(RangeFilter::class)]
+    private ?float $longitude = null;
 
     public function getId(): ?int
     {
@@ -299,6 +266,30 @@ class Boat
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(float $latitude): static
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(float $longitude): static
+    {
+        $this->longitude = $longitude;
 
         return $this;
     }
