@@ -39,6 +39,8 @@ class BoatController extends AbstractController
             $capacity = $data["maxCapacity"];
             $propulsionType = $data["propulsionType"];
             $size = $data["size"];
+            $longitude = $data["longitude"];
+            $latitude = $data["latitude"];
 
             try {
                 $boat = new Boat();
@@ -55,6 +57,8 @@ class BoatController extends AbstractController
                 $boat->setMaxCapacity($capacity);
                 $boat->setPropulsionType($propulsionType);
                 $boat->setSize($size);
+                $boat->setLatitude($latitude);
+                $boat->setLongitude($longitude);
                 $boat->setOwner($user);
 
                 $entityManager->persist($boat);
